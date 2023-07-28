@@ -7,12 +7,11 @@ from models.users import Users
 
 
 class Material_type(Base):
-    __tablename__ = "material_type"
+    __tablename__ = "material_types"
     id = Column(Integer, autoincrement=True, primary_key=True)
     product_id = Column(Integer)
     name = Column(String(255))
     user_id = Column(Integer)
-
 
     product = relationship('Products', foreign_keys=[product_id],
                         primaryjoin=lambda: and_(Products.id == Material_type.product_id))

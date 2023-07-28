@@ -1,24 +1,25 @@
 from fastapi import HTTPException
 
-from models.toquvchilar import Toquvchilar
+from models.toquvchilar import Weavers
 from utils.db_operations import save_in_db, the_one
 from utils.pagination import pagination
 
 
 def all_toquvchilar(search, page, limit, db):
-    toquvchilar = db.query(Toquvchilar)
+    weavers = db.query(Weavers)
 
     if search:
-        toquvchilar = toquvchilar.filter(Toquvchilar.name.ilike(f"%{search}%"))
-    toquvchilar = toquvchilar.order_by(Toquvchilar.name.asc())
-    return pagination(toquvchilar, page, limit)
+        weavers = weavers.filter(Weavers.name.ilike(f"%{search}%"))
+    weavers = weavers.order_by(Weavers.name.asc())
+    return pagination(weavers, page, limit)
+
 
 def create_new_toquvchi(form, db, thisuser):
-    if db.query(Toquvchilar).filter(Toquvchilar.phone_number == form.phone_number).first():
-        raise HTTPException(status_code=400, detail="Toquvchi  error")
+    if db.query(Weavers).filter(Weavers.phone_number == form.phone_number).first():
+        raise HTTPException(status_code=400, detail="Weaver  error")
     if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number length must be longer than 9")
-    new_toquvchi_db = Toquvchilar(
+    new_toquvchi_db = Weavers(
         name=form.name,
         address=form.address,
         balance=0,

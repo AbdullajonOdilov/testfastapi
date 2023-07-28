@@ -10,8 +10,7 @@ from models.supplies import Supplies
 from models.tools import Tools
 from models.warehouse_products import Warehouse_products
 from models.work import Work
-from models.toquvchilar import Toquvchilar
+from models.toquvchilar import Weavers
 from models.homes import Homes
 from models.work_history import Work_history
-from models.kpi_histories import Kpi_history
 from models.expenses import Expenses

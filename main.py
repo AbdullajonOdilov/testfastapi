@@ -5,7 +5,6 @@ from routes.draws import draws_router
 from routes.expenses import expenses_router
 from routes.homes import homes_router
 from routes.kpi import kpi_router
-from routes.kpi_history import kpihistory_router
 from routes.material_type import material_router
 from routes.proces import proces_router
 from routes.products import products_router
@@ -14,7 +13,7 @@ from routes.suppliers import suppliers_router
 
 from routes.supplies import supplies_router
 from routes.tools import tools_router
-from routes.toquvchilar import toquvchilar_router
+from routes.toquvchilar import weaver_router
 from routes.users import users_router
 from routes.warehouse_products import warehouses_router
 from routes.work import work_router
@@ -35,14 +34,14 @@ app.include_router(material_router)
 
 app.include_router(proces_router)
 app.include_router(kpi_router)
-app.include_router(kpihistory_router)
+
 app.include_router(work_router)
 app.include_router(work_history_router)
 app.include_router(expenses_router)
 
 app.include_router(tools_router)
 app.include_router(draws_router)
-app.include_router(toquvchilar_router)
+app.include_router(weaver_router)
 app.include_router(homes_router)
 
 

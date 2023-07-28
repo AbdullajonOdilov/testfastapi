@@ -3,8 +3,8 @@ from sqlalchemy.orm import joinedload
 
 from models.expenses import Expenses
 from models.homes import Homes
-from models.tools import Tools
-from models.toquvchilar import Toquvchilar
+
+from models.toquvchilar import Weavers
 from models.users import Users
 from utils.db_operations import save_in_db, the_one
 from utils.pagination import pagination
@@ -36,9 +36,9 @@ def create_new_expense(form, db, thisuser):
             Users.balance: Users.balance + form.money
         })
         db.commit()
-    elif form.source == "toquvchi":
-        db.query(Toquvchilar).filter(Toquvchilar.id == form.source_id).update({
-            Toquvchilar.balance: Toquvchilar.balance + form.money
+    elif form.source == "weaver":
+        db.query(Weavers).filter(Weavers.id == form.source_id).update({
+            Weavers.balance: Weavers.balance + form.money
         })
         db.commit()
     elif form.source == "home":
