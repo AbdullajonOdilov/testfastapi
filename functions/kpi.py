@@ -9,13 +9,13 @@ from utils.pagination import pagination
 
 
 def all_kpi(page, limit, db):
-    kpi = db.query(Kpi).options(joinedload(Kpi.proces))
+    kpi = db.query(Kpi).options(joinedload(Kpi.proces).load_only(Process.name))
     kpi = kpi.order_by(Kpi.id.desc())
     return pagination(kpi, page, limit)
 
 
-def create_new_kpi(form, db):
-    the_one(form.proces_id, Process, db), the_one(form.user_id, Users, db)
+def create_new_kpi(form, db, thisuser):
+    the_one(form.proces_id, Process, db), the_one(thisuser.id, Users, db)
     existing_kpi = db.query(Kpi).filter(Kpi.proces_id == form.proces_id).first()
     if existing_kpi:
         raise HTTPException(status_code=400, detail="Process id already exists")
@@ -23,11 +23,11 @@ def create_new_kpi(form, db):
     new_kpi_db = Kpi(
         proces_id=form.proces_id,
         price=form.price,
-        user_id=form.user_id  # 6
+        user_id=thisuser.id  # 6
     )
     save_in_db(db, new_kpi_db)
 
-    user = db.query(Users).filter(Users.id == form.user_id).first()
+    user = db.query(Users).filter(Users.id == thisuser.id).first()
     if form.price:
         db.query(Users).filter(Users.id == user.id).update({
             Users.balance: Users.balance + form.price
@@ -37,8 +37,9 @@ def create_new_kpi(form, db):
         raise HTTPException(status_code=404, detail="User not found")
 
 
-def update_kpi_r(form, db):
-    the_one(form.id, Kpi, db), the_one(form.user_id, Users, db)
+def update_kpi_r(form, db, thisuser):
+    the_one(form.id, Kpi, db)
+    the_one(thisuser.id, Users, db)
     proces = the_one(form.proces_id, Process, db)
     existing_kpi = db.query(Kpi).filter(Kpi.proces_id == form.proces_id).first()
     if existing_kpi and proces.id != form.proces_id:
@@ -47,11 +48,11 @@ def update_kpi_r(form, db):
     db.query(Kpi).filter(Kpi.id == form.id).update({
         Kpi.proces_id: form.proces_id,
         Kpi.price: form.price,
-        Kpi.user_id: form.user_id
+        Kpi.user_id: thisuser.id
     })
     db.commit()
 
-    user = db.query(Users).filter(Users.id == form.user_id).first()
+    user = db.query(Users).filter(Users.id == thisuser.id).first()
     if form.price:
         db.query(Users).filter(Users.id == user.id).update({
             Users.balance: form.price

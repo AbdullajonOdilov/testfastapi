@@ -11,7 +11,7 @@ class Suppliers(Base):
     name = Column(String(255))
     address = Column(String(255))
     phone_number = Column(Integer)
-    balance = Column(Float)
+    balance = Column(Numeric)
     user_id = Column(Integer)
 
     user = relationship('Users', foreign_keys=[user_id],

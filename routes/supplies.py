@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import database
-from functions.supplies import all_supplies, create_new_supply, update_supply_r
+from functions.supplies import all_supplies, create_new_supply, delete_supply_r
 from models.supplies import Supplies
 from schemas.supplies import CreateSupplies, UpdateSupplies
 from schemas.users import UserCreate
@@ -37,10 +37,10 @@ def create_supply(new_supply: CreateSupplies, db: Session = Depends(database),
     raise HTTPException(status_code=201, detail="Supply created successfully")
 
 
-@supplies_router.put("/update_supply")  #did not work
-def update_supply(supply: UpdateSupplies, db: Session = Depends(database),
+@supplies_router.delete("/delete_supply")
+def deleter_supply(id: int, db: Session = Depends(database),
                   current_user: UserCreate = Depends(get_current_active_user)):
     role_verification(current_user)
-    update_supply_r(supply, db, current_user)
-    raise HTTPException(status_code=200, detail="The supply changed")
+    delete_supply_r(current_user, id, db)
+    raise HTTPException(status_code=200, detail="The supply deleted")
 

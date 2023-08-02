@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import database
-from functions.warehouse_products import all_warehouses, update_warehouse_r, delete_warehouse_p
+from functions.warehouse_products import all_warehouses
 from models.warehouse_products import Warehouse_products
 from schemas.users import UserCreate
-from schemas.warehouse_products import CreateWarehouse, UpdateWarehouse
+# from schemas.warehouse_products import CreateWarehouse, UpdateWarehouse
 from utils.db_operations import the_one
 from utils.login import get_current_active_user
 from utils.role_verification import role_verification
@@ -15,6 +15,7 @@ from utils.role_verification import role_verification
 warehouses_router = APIRouter(
     tags=["Warehouse_products endpoints"]
 )
+
 
 @warehouses_router.get("/get_warehouses")
 def get_warehouses(id: int = 0, page: int = 0, limit: int = 10,
@@ -29,12 +30,5 @@ def get_warehouses(id: int = 0, page: int = 0, limit: int = 10,
     return all_warehouses(page, limit, db)
 
 
-
-@warehouses_router.put("/update_warehouse")
-def update_warehouse(update_w: UpdateWarehouse, db: Session = Depends(database),
-                      current_user: UserCreate = Depends(get_current_active_user)):
-    role_verification(current_user)
-    update_warehouse_r(update_w, db)
-    raise HTTPException(status_code=200, detail="The warehouse updated")
 
 

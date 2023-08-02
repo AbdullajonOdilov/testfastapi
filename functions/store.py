@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import joinedload
 
 from models.store import Stores
 from utils.db_operations import save_in_db, the_one
@@ -6,11 +7,11 @@ from utils.pagination import pagination
 
 
 def all_stores(search, page, limit, db):
-    stores = db.query(Stores)
+    stores = db.query(Stores).options(joinedload(Stores.user))
 
     if search:
         stores = stores.filter(Stores.name.ilike(f"%{search}%"))
-    stores = stores.order_by(Stores.name.asc())
+    stores = stores.order_by(Stores.id.desc())
     return pagination(stores, page, limit)
 
 

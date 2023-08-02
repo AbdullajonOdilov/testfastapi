@@ -1,20 +1,21 @@
-from pydantic import BaseModel
-from datetime import date
+from pydantic import BaseModel, Field
 
 
 class CreateExpenses(BaseModel):
+    # source: constr(regex='^(admin|user|home|weaver)$') for validation
+    # I wrote this in functions
     source: str
     source_id: int
     money: float
-    date: date
     comment: str
 
 
 class UpdateExpenses(BaseModel):
     id: int
+    # source: constr(regex='^(admin|user|home|weaver)$') for validation
+    # I wrote this in functions
     source: str
-    source_id: int
+    source_id: int = Field(..., ge=1)
     money: float
-    date: date
     comment: str
 

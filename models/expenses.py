@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import *
@@ -12,8 +14,8 @@ class Expenses(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     source = Column(String(255))
     source_id = Column(Integer)
-    money = Column(Float)
-    date = Column(Date)
+    money = Column(Numeric)
+    date = Column(DateTime, default=datetime.utcnow)  # Corrected import here
     comment = Column(String(255))
     user_id = Column(Integer)
 
@@ -33,5 +35,3 @@ class Expenses(Base):
 
     user = relationship('Users', foreign_keys=[user_id],
                         primaryjoin=lambda: and_(Users.id == Expenses.user_id))
-
-

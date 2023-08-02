@@ -8,13 +8,12 @@ from models.suppliers import Suppliers
 from models.users import Users
 
 
-
 class Supplies(Base):
     __tablename__ = "supplies"
     id = Column(Integer, autoincrement=True, primary_key=True)
     measure = Column(String(255))
     quantity = Column(Integer)
-    price = Column(Float)
+    price = Column(Numeric)
     date = Column(Date)
 
     product_id = Column(Integer)

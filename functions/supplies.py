@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from functions.warehouse_products import create_new_warehouse
@@ -7,12 +8,12 @@ from models.suppliers import Suppliers
 from models.supplies import Supplies
 from models.store import Stores
 from models.warehouse_products import Warehouse_products
-from utils.db_operations import save_in_db, the_one, update_in_db
+from utils.db_operations import save_in_db, the_one
 from utils.pagination import pagination
 
 
 def all_supplies(search, page, limit, db):
-    supplies = db.query(Supplies).options(joinedload(Supplies.product), joinedload(Supplies.suppliers))
+    supplies = db.query(Supplies).options(joinedload(Supplies.product).load_only(Products.name), joinedload(Supplies.suppliers).load_only(Suppliers.name))
     if search:
         search_formatted = "%{}%".format(search)
         supplies = supplies.filter(Suppliers.name.like(search_formatted) |
@@ -26,10 +27,6 @@ def all_supplies(search, page, limit, db):
 def create_new_supply(form, db, thisuser):
     the_one(form.suppliers_id, Suppliers, db), the_one(form.product_id, Products, db),
     the_one(form.store_id, Stores, db)
-    # if db.query(Supplies).filter(Supplies.product_id == form.product_id).first():
-    #     raise HTTPException(status_code=404, detail="That product is available in the database")
-    # elif db.query(Supplies).filter(Supplies.suppliers_id == form.suppliers_id).first():
-    #     raise HTTPException(status_code=404, detail="That supplier is available in the database")
     new_supply_db = Supplies(
         measure=form.measure,
         quantity=form.quantity,
@@ -64,34 +61,26 @@ def create_new_supply(form, db, thisuser):
             price=form.price,
             product_id=form.product_id,
             store_id=form.store_id,
-            db=db)
+            db=db
+        )
 
 
+def delete_supply_r(user, id, db):
+    supply = the_one(id, Supplies, db)
+    if user.role != "admin":
+        raise HTTPException(status_code=400, detail="Role error!")
 
-def update_supply_r(supply, db, thisuser):
-    # product = db.query(Products).filter(Products.id == supply.product_id).first()
-    # supplier = db.query(Suppliers).filter(Suppliers.id == supply.suppliers_id).first()
-    #
-    the_one(supply.id, Supplies, db), the_one(supply.suppliers_id, Suppliers, db),\
-    the_one(supply.product_id, Products, db), the_one(supply.warehouse_id, Warehouse_products, db)
-    # if (product and supplier) or (product is None and supplier is None):
-    #     raise HTTPException(status_code=400, detail="You must input Product or Supplier")
-    db.query(Supplies).filter(Supplies.id == supply.id).update({
-        Supplies.measure: supply.measure,
-        Supplies.quantity: supply.quantity,
-        Supplies.price: supply.price,
-        Supplies.date: supply.date,
-        Supplies.product_id: supply.product_id,
-        Supplies.suppliers_id: supply.suppliers_id,
-        Supplies.store_id: supply.store_id,
-        # Supplies.user_id: thisuser.id
+    # Check if there is enough quantity of products in the database
+    warehouse_quantity = db.query(Warehouse_products.quantity).filter(
+        Warehouse_products.product_id == supply.product_id).scalar()
+    if warehouse_quantity is None or warehouse_quantity < supply.quantity:
+        raise HTTPException(status_code=400, detail="There are not enough quantity of products in the database")
+
+    # Update the quantity in Warehouse_products and then delete the supply
+    db.query(Warehouse_products).filter(Warehouse_products.product_id == supply.product_id).update({
+        Warehouse_products.quantity: Warehouse_products.quantity - supply.quantity
     })
+
+    db.query(Supplies).filter(Supplies.id == id).delete()
     db.commit()
 
-#
-# def delete_supply_r(user, id, db):
-#     the_one(id, Supplies, db)
-#     if user.role != "admin":
-#         raise HTTPException(status_code=400, detail="Role error!")
-#     db.query(Supplies).filter(Supplies.id == id).delete()
-#     db.commit()

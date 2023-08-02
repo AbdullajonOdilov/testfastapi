@@ -12,6 +12,6 @@ class Users(Base):
     role = Column(String(10))
     status = Column(Boolean)
     token = Column(String(255), default='')
-    balance = Column(Float())
+    balance = Column(Numeric)
     # date = Column(date)
 

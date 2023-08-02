@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import joinedload
 
 from models.homes import Homes
 from utils.db_operations import save_in_db, the_one
@@ -6,7 +7,7 @@ from utils.pagination import pagination
 
 
 def all_homes(search, page, limit, db):
-    homes = db.query(Homes)
+    homes = db.query(Homes).options(joinedload(Homes.user))
 
     if search:
         homes = homes.filter(Homes.address.ilike(f"%{search}%"))
@@ -20,6 +21,7 @@ def create_new_home(form, db, thisuser):
     if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number must be longer than 9 characters")
     new_home_db = Homes(
+        name=form.name,
         address=form.address,
         phone_number=form.phone_number,
         balance=0,
@@ -39,7 +41,7 @@ def update_home_r(form, db, thisuser):
     db.query(Homes).filter(Homes.id == form.id).update({
         Homes.address: form.address,
         Homes.phone_number: form.phone_number,
-        # Homes.balance: home_update.balance,
+        Homes.name: form.name,
         Homes.user_id: thisuser.id
 
     })

@@ -1,12 +1,14 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import joinedload
 
 from models.suppliers import Suppliers
+from models.users import Users
 from utils.db_operations import save_in_db, the_one
 from utils.pagination import pagination
 
 
 def all_suppliers(search, page, limit, db):
-    suppliers = db.query(Suppliers)
+    suppliers = db.query(Suppliers).options(joinedload(Suppliers.user))
 
     if search:
         suppliers = suppliers.filter(Suppliers.name.ilike(f"%{search}%"))
@@ -16,7 +18,7 @@ def all_suppliers(search, page, limit, db):
 
 def create_new_supplier(form, db, thisuser):
     if db.query(Suppliers).filter(Suppliers.phone_number == form.phone_number).first():
-        raise HTTPException(status_code=400, detail="Supplier error")
+        raise HTTPException(status_code=400, detail="The phone number already exists")
     if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number must be  9 numbers ")
     new_supplier_db = Suppliers(
@@ -30,8 +32,8 @@ def create_new_supplier(form, db, thisuser):
 
 
 def update_supplier_r(form, db, thisuser):
-    the_one(form.id, Suppliers, db)
-    if db.query(Suppliers).filter(Suppliers.phone_number == form.phone_number).first():
+    supplier = the_one(form.id, Suppliers, db)
+    if db.query(Suppliers).filter(Suppliers.phone_number == form.phone_number).first() and supplier.phone_number != supplier.phone_number:
         raise HTTPException(status_code=400, detail="Supplier error")
     if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number must be  9 characters")
@@ -39,7 +41,6 @@ def update_supplier_r(form, db, thisuser):
         Suppliers.name: form.name,
         Suppliers.address: form.address,
         Suppliers.phone_number: form.phone_number,
-
         Suppliers.user_id: thisuser.id
     })
     db.commit()

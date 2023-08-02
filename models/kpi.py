@@ -10,7 +10,7 @@ class Kpi(Base):
     __tablename__ = "kpi"
     id = Column(Integer, autoincrement=True, primary_key=True)
     proces_id = Column(Integer)
-    price = Column(Float)
+    price = Column(Numeric)
     user_id = Column(Integer)
 
     proces = relationship('Process', foreign_keys=[proces_id],

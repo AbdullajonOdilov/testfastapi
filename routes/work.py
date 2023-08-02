@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import database
-from functions.work import all_work, create_new_work, update_work_r
+from functions.work import all_work, create_new_work, delete_work_r
 from models.work import Work
 
 from schemas.users import UserCreate
@@ -25,7 +25,8 @@ def get_work_type(
     page: int = 0,
     limit: int = 10,
     db: Session = Depends(database),
-    current_user: UserCreate = Depends(get_current_active_user)):
+    current_user: UserCreate = Depends(get_current_active_user)
+):
     role_verification(current_user)
     if page < 0 or limit < 0:
         raise HTTPException(status_code=400, detail="page or limit should not be less than 0")
@@ -36,17 +37,18 @@ def get_work_type(
 
 @work_router.post("/create_work")
 def create_work(work: CreateWork,
-                   current_user: UserCreate = Depends(get_current_active_user),
-                   db: Session = Depends(database)):
+                current_user: UserCreate = Depends(get_current_active_user),
+                db: Session = Depends(database)):
     role_verification(current_user)
-    create_new_work(work, db, current_user)
+    create_new_work(work, current_user, db)
     raise HTTPException(status_code=201, detail="New work created")
 
-@work_router.put("/update_work")
-def update_material(work_update: UpdateWork,
-                   current_user: UserCreate = Depends(get_current_active_user),
-                   db: Session = Depends(database)):
+
+@work_router.delete("/delete_work")
+def delete_work(id: int,
+                current_user: UserCreate = Depends(get_current_active_user),
+                db: Session = Depends(database)):
     role_verification(current_user)
-    update_work_r(work_update, db, current_user)
-    raise HTTPException(status_code=200, detail="The work updated")
+    delete_work_r(id, db)
+    raise HTTPException(status_code=200, detail="The work deleted")
 

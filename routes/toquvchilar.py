@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import database
-from functions.toquvchilar import all_toquvchilar, create_new_toquvchi, update_toquvchi_r
+from functions.toquvchilar import all_toquvchilar, create_new_toquvchi, update_weaver_r
 from models.toquvchilar import Weavers
 from schemas.toquvchilar import CreateToquvchi, UpdateToquvchi
 from schemas.users import UserCreate
@@ -12,13 +12,14 @@ from utils.db_operations import the_one
 from utils.login import get_current_active_user
 from utils.role_verification import role_verification
 
+
 weaver_router = APIRouter(
-    tags=["Toquvchilar endpoints"]
+    tags=["weavers (Toquvchilar) endpoints"]
 )
 
 
-@weaver_router.get("/toquvchilar")
-def get_toquvchilars(
+@weaver_router.get("/weavers")
+def get_weavers(
     search: str = None,
     id: int = 0,
     page: int = 0,
@@ -36,7 +37,7 @@ def get_toquvchilars(
 
 
 @weaver_router.post("/create_weaver")
-def create_toquvchi(toquvchi: CreateToquvchi,
+def create_weaver(toquvchi: CreateToquvchi,
                     current_user: UserCreate = Depends(get_current_active_user),
                     db: Session = Depends(database)):
     role_verification(current_user)
@@ -45,11 +46,11 @@ def create_toquvchi(toquvchi: CreateToquvchi,
 
 
 @weaver_router.put("/update_weaver")
-def update_toquvchi(toquvchi_update: UpdateToquvchi,
+def update_weaver(toquvchi_update: UpdateToquvchi,
                     current_user: UserCreate = Depends(get_current_active_user),
                     db: Session = Depends(database)):
     role_verification(current_user)
-    update_toquvchi_r(toquvchi_update, db, current_user)
+    update_weaver_r(toquvchi_update, db, current_user)
     raise HTTPException(status_code=200, detail="The weaver updated")
 
 

@@ -19,26 +19,14 @@ def all_histories(page, limit, db):
     return pagination(histories, page, limit)
 
 
-def create_new_work_history(form, thisuser, db):
-    the_one(form.work_id, Work, db),
-    the_one(form.tool_id, Tools, db),
-    the_one(form.connection_user_id, Users, db)
-    the_one(form.weaver_id, Weavers, db), the_one(form.draw_id, Draws, db),
-    the_one(form.home_id, Homes, db)
-    if db.query(Work_history).filter(Work_history.work_id == form.work_id).first():
+def create_new_work_history(work_id, money, date, status, db):
+    if db.query(Work_history).filter(Work_history.work_id == work_id).first():
         raise HTTPException(status_code=400, detail="The work already exists in the database")
     new_work_db = Work_history(
-        money=0,
-        work_id=form.work_id,
-        # process_id=form.process_id,
-        toquvchi_id=form.toquvchi_id,
-        draw_id=form.draw_id,
-        tool_id=form.tool_id,
-        home_id=form.home_id,
-        connection_user_id=form.connection_user_id,
-        date=form.date,
-        status=form.status,
-        user_id=thisuser.id
+        work_id=work_id,
+        money=money,
+        date=date,
+        status=status,
     )
     save_in_db(db, new_work_db)
 

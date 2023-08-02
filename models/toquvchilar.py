@@ -11,7 +11,7 @@ class Weavers(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String(255))
     phone_number = Column(Integer)
-    balance = Column(Float)
+    balance = Column(Numeric)
     comment = Column(String(255))
     address = Column(String(255))
     user_id = Column(Integer)

@@ -17,8 +17,6 @@ users_router = APIRouter(
 )
 
 
-
-
 @users_router.get("/users")
 def get_users(
         search: str = None,
@@ -36,6 +34,7 @@ def get_users(
     if id > 0:
         return the_one(id, Users, db)
     return all_users(search, page, limit, status, db)
+
 
 @users_router.post("/create_user")
 def create_user(new_user: UserCreate, db: Session = Depends(database),

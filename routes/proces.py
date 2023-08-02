@@ -17,15 +17,15 @@ proces_router = APIRouter(
 )
 
 @proces_router.get("/get_proces")
-def get_proces(id: int = 0, search: str = None, page: int = 0, limit: int = 10, status: bool =None,
-                   db: Session = Depends(database),
-                   current_user: UserCreate = Depends(get_current_active_user)):
+def get_proces(id: int = 0, search: str = None, page: int = 0, limit: int = 10,
+               db: Session = Depends(database),
+               current_user: UserCreate = Depends(get_current_active_user)):
     role_verification(current_user)
     if page < 0 or limit < 0:
         raise HTTPException(status_code=400, detail="page or limit should not be less than 0")
     if id > 0:
         return the_one(id, Process, db)
-    return all_proces(search, page, limit, status, db)
+    return all_proces(search, page, limit, db)
 
 
 @proces_router.post("/create_process")

@@ -15,14 +15,14 @@ def all_users(search, page, limit, status, db):
         users = users.filter(Users.status==True)
     elif status is False:
         users = users.filter(Users.status==False)
-    users = users.order_by(Users.username.asc())
+    users = users.order_by(Users.id.desc())
     return pagination(users, page, limit)
 
 
 def create_new_user(form, db):
     if db.query(Users).filter(Users.username == form.username).first():
         raise HTTPException(status_code=400, detail="Username already exists")
-    if form.role != "admin" and form.role != "user":
+    if form.role not in ["admin", "user"]:
         raise HTTPException(status_code=400, detail="Role error!")
     password_hash = get_password_hash(form.password)
     new_user_db = Users(

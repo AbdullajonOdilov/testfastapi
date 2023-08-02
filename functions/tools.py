@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import joinedload
 
 from models.tools import Tools
 from utils.db_operations import save_in_db, the_one
@@ -6,7 +7,7 @@ from utils.pagination import pagination
 
 
 def all_tools(search, page, limit, status, db):
-    tools = db.query(Tools)
+    tools = db.query(Tools).options(joinedload(Tools.user))
     if search:
         search_filter = Tools.name.ilike(f"%{search}%")
     else:

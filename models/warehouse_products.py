@@ -11,7 +11,7 @@ class Warehouse_products(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     measure = Column(String(255))
     quantity = Column(Integer)
-    price = Column(Float)
+    price = Column(Numeric)
     product_id = Column(Integer)
     store_id = Column(Integer)
     product = relationship('Products', foreign_keys=[product_id],

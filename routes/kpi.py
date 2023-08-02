@@ -35,7 +35,7 @@ def create_kpi(new_kpi: CreateKpi,
                db: Session = Depends(database),
                current_user: UserCreate = Depends(get_current_active_user)):
     role_verification(current_user)
-    create_new_kpi(new_kpi, db)
+    create_new_kpi(new_kpi, db, current_user)
     raise HTTPException(status_code=201, detail="New kpi created")
 
 
@@ -43,6 +43,6 @@ def create_kpi(new_kpi: CreateKpi,
 def update_kpi(update_kpi: UpdateKpi, db: Session = Depends(database),
                current_user: UserCreate = Depends(get_current_active_user)):
     role_verification(current_user)
-    update_kpi_r(update_kpi, db)
+    update_kpi_r(update_kpi, db, current_user)
     raise HTTPException(status_code=200, detail="The kpi updated")
 

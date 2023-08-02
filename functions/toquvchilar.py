@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import joinedload
 
 from models.toquvchilar import Weavers
 from utils.db_operations import save_in_db, the_one
@@ -6,7 +7,7 @@ from utils.pagination import pagination
 
 
 def all_toquvchilar(search, page, limit, db):
-    weavers = db.query(Weavers)
+    weavers = db.query(Weavers).options(joinedload(Weavers.user))
 
     if search:
         weavers = weavers.filter(Weavers.name.ilike(f"%{search}%"))
@@ -19,7 +20,7 @@ def create_new_toquvchi(form, db, thisuser):
         raise HTTPException(status_code=400, detail="Weaver  error")
     if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number length must be longer than 9")
-    new_toquvchi_db = Weavers(
+    new_weaver_db = Weavers(
         name=form.name,
         address=form.address,
         balance=0,
@@ -27,23 +28,23 @@ def create_new_toquvchi(form, db, thisuser):
         phone_number=form.phone_number,
         user_id=thisuser.id
     )
-    save_in_db(db, new_toquvchi_db)
+    save_in_db(db, new_weaver_db)
 
 
-def update_toquvchi_r(toquvchi_update, db, thisuser):
-    the_one(toquvchi_update.id, Toquvchilar, db)
-    if db.query(Toquvchilar).filter(Toquvchilar.phone_number == toquvchi_update.phone_number).first():
-        raise HTTPException(status_code=400, detail="Toquvchi  error")
-    if len(str(toquvchi_update.phone_number)) != 9:
+def update_weaver_r(form, db, thisuser):
+    weaver = the_one(form.id, Weavers, db)
+    if db.query(Weavers).filter(Weavers.phone_number == form.phone_number).first() and weaver.phone_number != form.phone_number:
+        raise HTTPException(status_code=400, detail="Weaver  error")
+    if len(str(form.phone_number)) != 9:
         raise HTTPException(status_code=400, detail="Phone number must be longer than 9 characters")
 
-    db.query(Toquvchilar).filter(Toquvchilar.id == toquvchi_update.id).update({
-        Toquvchilar.name: toquvchi_update.name,
-        Toquvchilar.phone_number: toquvchi_update.phone_number,
-        # Toquvchilar.balance: toquvchi_update.balance,
-        Toquvchilar.comment: toquvchi_update.comment,
-        Toquvchilar.address: toquvchi_update.address,
-        Toquvchilar.user_id: thisuser.id
+    db.query(Weavers).filter(Weavers.id == form.id).update({
+        Weavers.name: form.name,
+        Weavers.phone_number: form.phone_number,
+        # Weavers.balance: form.balance,
+        Weavers.comment: form.comment,
+        Weavers.address: form.address,
+        Weavers.user_id: thisuser.id
     })
     db.commit()
 
