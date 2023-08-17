@@ -45,7 +45,6 @@ def create_tool(tool: CreateTools,
     raise HTTPException(status_code=201, detail="New tool created")
 
 
-
 @tools_router.put("/update_tool")
 def update_tool(
     tool_update: UpdateTools,

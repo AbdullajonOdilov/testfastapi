@@ -1,5 +1,3 @@
-import inspect
-
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
@@ -42,6 +40,7 @@ def create_draw(name: str, status: bool = None,
     role_verification(current_user)
     create_new_draw(name, status, db, current_user, file)
     raise HTTPException(status_code=201, detail="New draw created")
+
 
 @draws_router.put("/update_draw")
 def update_draw(

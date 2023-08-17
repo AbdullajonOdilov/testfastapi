@@ -43,6 +43,7 @@ def create_product(product: CreateProduct,
     create_new_product(product, db)
     raise HTTPException(status_code=201, detail="New product created")
 
+
 @products_router.put("/update_product")
 def update_product(product_update: UpdateProduct,
                    current_user: UserCreate = Depends(get_current_active_user),

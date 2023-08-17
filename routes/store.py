@@ -42,6 +42,7 @@ def create_store(store: CreateStore,
     create_new_store(store, db, current_user)
     raise HTTPException(status_code=201, detail="New store created")
 
+
 @stores_router.put("/update_store")
 def update_store(store_update: UpdateStore,
                  current_user: UserCreate = Depends(get_current_active_user),

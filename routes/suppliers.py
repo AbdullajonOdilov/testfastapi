@@ -42,6 +42,7 @@ def create_supplier(supplier: CreateSuppliers,
     create_new_supplier(supplier, db, current_user)
     raise HTTPException(status_code=201, detail="New supplier created")
 
+
 @suppliers_router.put("/update_supplier")
 def update_supplier(supplier_update: UpdateSuppliers,
                     current_user: UserCreate = Depends(get_current_active_user),
